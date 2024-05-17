@@ -1,0 +1,10 @@
+{
+    "name": "@pd/pdpipe",
+    "version": "0.1.1",
+    "exports": "./mod.ts",
+    "compilerOptions": {
+        "types": [
+            "./pipedown.d.ts"
+        ]
+    }
+}
