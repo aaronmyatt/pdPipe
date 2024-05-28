@@ -1,12 +1,3 @@
-// import type {Token} from 'https://deno.land/x/rusty_markdown@v0.4.1/event.ts';
-// exclude TokenCommon<"start" | "end"> & TagCommon<SimpleTags> from Token
-type Token = {
-    tag: string,
-    type: "start" | "end" | "text",
-    content: string,
-    level: number,
-    language: string,
-} & object;
 type PDError = {
     func: string,
 } & Error;
@@ -49,9 +40,14 @@ type Step =     {
   funcName: string,
   inList: boolean,
   config?: {
-    check?: string[],
-    route?: string[],
+    checks?: string[],
+    or?: string[],
+    and?: string[],
+    not?: string[],
+    routes?: string[],
     flags?: string[],
+    only?: number,
+    stop?: number,
   }
 };
 type Steps = Step[];
