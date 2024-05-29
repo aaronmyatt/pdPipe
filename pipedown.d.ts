@@ -16,22 +16,6 @@ type Pipeline<T extends object> = {
     pipe: (stage: Stage<T>) => Pipeline<T>,
     process: (args: T) => Promise<T>,
 };
-// type Pipe<T> = {
-//     name: string,
-//     steps: Step[],
-//     config: PipeConfig,
-//     dir: string,
-//     fileName: string,
-// };
-type mdToPipeInput = {
-    markdown: string,
-    tokens: Token[],
-    headings: number[],
-    codeBlocks: number[],
-    steps: Step[],
-    pipeName: string,
-    pipe: Pipe,
-} & RangeFinderInput & Input;
 
 type Step =     {
   code: string,
@@ -40,14 +24,14 @@ type Step =     {
   funcName: string,
   inList: boolean,
   config?: {
-    checks?: string[],
-    or?: string[],
-    and?: string[],
-    not?: string[],
-    routes?: string[],
-    flags?: string[],
-    only?: number,
-    stop?: number,
+        checks?: string[],
+        or?: string[],
+        and?: string[],
+        not?: string[],
+        routes?: string[],
+        flags?: string[],
+        only?: number,
+        stop?: number,
   }
 };
 type Steps = Step[];
@@ -76,21 +60,3 @@ type Pipe = {
         [key: string]: unknown;
     },
 };
-
-type RangeFinderInput = {
-    ranges: {
-        token: Token,
-        index: number,
-        codeBlocks: number[][],
-        headings: number[][],
-        metaBlocks: number[][],
-        lists: number[][],
-    }
-};
-
-type PipeToScriptInput = {
-    pipe?: Pipe;
-    pipeImports?: string[];
-    functions?: string[];
-    script?: string;
-}
