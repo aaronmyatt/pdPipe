@@ -45,27 +45,25 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
     if(conditions.length){
       const firstChecks = conditions[validator](([_key,value]) => !!value)
       const orChecks = orConditions.some(([_key,value]: string[]) => !!value)
-
+      
       if(firstChecks){
         $p.set(opts, '/checks', Object.fromEntries(conditions));
       } 
       else if(orChecks) {
          $p.set(opts, '/checks', Object.fromEntries(orConditions));
-      } else {
-        return input;
+        } else {
+          return input;
       }
     }
-
-    if(config.routes && input.request){
+        
+    if(config.routes.length && input.request){
       const route = config.routes
       .map((route: string) => new URLPattern({ pathname: route }))
       .find((route: URLPattern) => {
         return route.test(input.request.url);
       })
-
-      if(!route){
-        return input
-      }
+      
+      if(!route) return input
 
       input.route = route.exec(input.request.url);
     }
