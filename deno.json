@@ -1,10 +1,8 @@
 {
-    "name": "@pd/pdpipe",
-    "version": "0.2.1",
-    "exports": "./mod.ts",
-    "compilerOptions": {
-        "types": [
-            "./pipedown.d.ts"
-        ]
-    }
+  "name": "@pd/pdpipe",
+  "version": "0.2.2",
+  "exports": "./mod.ts",
+  "compilerOptions": {
+    "types": ["./pipedown.d.ts"]
+  }
 }

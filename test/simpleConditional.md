@@ -20,7 +20,7 @@ When it has a truthy pointer
 Then it will be run
 - if: /trigger
 - ```ts
-    import { assert, assertFalse, assertObjectMatch } from "jsr:@std/assert";
+    import { assert, assertFalse, assertObjectMatch, unreachable } from "jsr:@std/assert";
     assert(input.trigger);
     console.log('pass: oneConditionTruthy')
     ```
@@ -32,7 +32,6 @@ When it has a falsy pointer
 Then it will **not** be run
 - if: /skip
 - ```ts
-    import { unreachable } from "jsr:@std/assert";
     unreachable();
     ```
 

@@ -17,3 +17,10 @@ Let's use dax to keep all out commands in one place
 await $`deno run -A --unstable-kv ../../pipedown/pdCli/mod.ts build;
 deno run -A testSimpleRequests.ts`
 ```
+
+## runCheckChecks
+Let's use dax to keep all out commands in one place
+```ts
+await $`deno run -A --unstable-kv ../../pipedown/pdCli/mod.ts build;
+deno run -A testRouteChecks.ts`
+```
