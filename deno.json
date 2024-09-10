@@ -4,5 +4,6 @@
   "exports": "./mod.ts",
   "compilerOptions": {
     "types": ["./pipedown.d.ts"]
-  }
+  },
+  "license": "MIT"
 }
