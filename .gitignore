@@ -1,4 +1,4 @@
-test/.pd/
+.pd/
 test/repl
 .aider*
 .DS_Store
