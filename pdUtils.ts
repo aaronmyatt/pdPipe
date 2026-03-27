@@ -83,12 +83,13 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
         // Execute the step, capturing any thrown exception as a structured error
         try {
           await func(input, opts);
-        } catch (e) {
+        } catch (e: unknown) {
           input.errors = input.errors || [];
+          const err = e as Error;
           input.errors.push({
-            message: e.message,
-            stack: e.stack,
-            name: e.name,
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
             func: func.name,
           });
         }
@@ -105,5 +106,17 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
     });
 }
 
+/**
+ * Wraps pipeline stage functions with conditional-execution guards.
+ *
+ * Each stage is evaluated against its step config for `only`, `stop`, error
+ * short-circuit, `not`, `check`/`and`/`or` boolean gates, and URL `routes`
+ * matching. Exceptions thrown by a stage are captured as structured errors
+ * on `input.errors[]`.
+ *
+ * @param funcs - Array of raw stage functions.
+ * @param opts - Pipe definition containing per-step guard configurations.
+ * @returns Wrapped stage functions with guard logic applied.
+ */
 export { funcWrapper };
 export default funcWrapper;

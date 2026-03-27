@@ -1,6 +1,7 @@
 {
   "name": "@pd/pdpipe",
   "version": "0.2.2",
+  "description": "A lightweight, composable async pipeline library for Deno and Node.js — chain stages with conditional execution guards",
   "exports": "./mod.ts",
   "compilerOptions": {
     "types": ["./pipedown.d.ts"]
