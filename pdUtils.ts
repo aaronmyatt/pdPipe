@@ -1,6 +1,20 @@
 import type { Input, Pipe, Stage, Step } from "./pipedown.d.ts";
 import $p from "jsr:@pd/pointers@0.1.0";
 
+// ── Content-type shorthand map ──
+// Used by the "type:" DSL directive to resolve short names to full MIME types.
+// If a value doesn't match any shorthand, it's treated as a raw MIME type.
+// Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
+const CONTENT_TYPE_MAP: Record<string, string> = {
+  json: "application/json",
+  html: "text/html; charset=utf-8",
+  text: "text/plain; charset=utf-8",
+  xml: "application/xml",
+  css: "text/css; charset=utf-8",
+  js: "text/javascript; charset=utf-8",
+  stream: "text/event-stream",
+};
+
 /**
  * Wraps each pipeline stage function with conditional-execution guards.
  *
@@ -22,7 +36,7 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
     // Step 1: pair each function with its conditional config from the pipe definition
     .map((func, index: number): { func: Stage; config: Step["config"] } => {
       const config: Step["config"] = Object.assign(
-        { checks: [], not: [], or: [], and: [], routes: [], only: false, stop: false },
+        { checks: [], not: [], or: [], and: [], routes: [], methods: [], contentType: "", only: false, stop: false },
         $p.get(opts, "/steps/" + index + "/config"),
       );
       return { func, config };
@@ -71,6 +85,7 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
         }
 
         // Route matching: skip if no URL patterns match the incoming request
+        // Ref: https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
         if (config.routes.length) {
           const route = config.routes
             .map((route: string) => new URLPattern({ pathname: route }))
@@ -78,6 +93,15 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
 
           if (!route) return input;
           input.route = route.exec(input.request.url);
+        }
+
+        // HTTP method guard: skip this step if the request method doesn't match
+        // any of the listed methods. Multiple "method:" directives on one step
+        // act as OR (e.g., method: POST + method: PUT → runs for either).
+        // Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+        if (config.methods && config.methods.length > 0) {
+          const reqMethod = input.request?.method?.toUpperCase();
+          if (!reqMethod || !config.methods.includes(reqMethod)) return input;
         }
 
         // Execute the step, capturing any thrown exception as a structured error
@@ -92,6 +116,18 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
             name: err.name,
             func: func.name,
           });
+        }
+
+        // Content-type directive: set the response content-type after the step
+        // executes. This allows the step to override it if needed (the directive
+        // provides a default, not an absolute). Supports shorthand names ("html",
+        // "json") or raw MIME types ("image/png").
+        // Ref: CONTENT_TYPE_MAP defined above
+        if (config.contentType) {
+          const resolved = CONTENT_TYPE_MAP[config.contentType] || config.contentType;
+          if (input.responseOptions?.headers) {
+            (input.responseOptions as { headers: Record<string, string> }).headers["content-type"] = resolved;
+          }
         }
 
         return input;
@@ -118,5 +154,5 @@ function funcWrapper<I extends Input>(funcs: Stage<I>[], opts: Pipe) {
  * @param opts - Pipe definition containing per-step guard configurations.
  * @returns Wrapped stage functions with guard logic applied.
  */
-export { funcWrapper };
+export { funcWrapper, CONTENT_TYPE_MAP };
 export default funcWrapper;

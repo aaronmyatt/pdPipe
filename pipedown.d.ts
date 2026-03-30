@@ -29,6 +29,10 @@ type Step =     {
         and?: string[],
         not?: string[],
         routes?: string[],
+        /** HTTP methods this step responds to (e.g., ["GET", "POST"]). Multiple = OR. */
+        methods?: string[],
+        /** Response content-type shorthand or raw MIME type (e.g., "html", "text/csv"). */
+        contentType?: string,
         flags?: string[],
         only?: number,
         stop?: number,
